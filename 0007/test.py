@@ -1,5 +1,6 @@
 #-*-encoding: utf-8-*-
 import os
+import sys
 work_path='/Users/ljy/PycharmProjects/l6J6y/0007/test'
 
 'find how many lines written'
@@ -27,9 +28,27 @@ def find_lines_func2(filename):
 def find_lines_func3(filename):
     file = open(filename)
     line_count = 0
-    while ("" != file.readline()):
+    comment_lines_count = 0
+    blank_lines_count = 0
+    multi_comment_flag = False
+
+    tmp = file.readline();
+    while ("" != tmp):
         line_count += 1
-    return line_count
+        if ((tmp.lstrip()).startswith("//") and (not multi_comment_flag)):
+            comment_lines_count += 1
+        elif (len(tmp) == 1 and (not multi_comment_flag)):
+            blank_lines_count += 1;
+        elif ((tmp.lstrip()).startswith("/*")):
+            multi_comment_flag = True
+            comment_lines_count += 1
+        elif ((tmp.lstrip()).startswith("*") and (multi_comment_flag)): #去除左边的空格 lstrip
+            comment_lines_count += 1
+        elif (tmp.endswith("*/\n") and (multi_comment_flag)):
+            multi_comment_flag = False
+            comment_lines_count += 1
+        tmp = file.readline();
+    return line_count, comment_lines_count, blank_lines_count
 
 
 os.chdir(work_path)
@@ -38,14 +57,21 @@ if (os.getcwd() != '/Users/ljy/PycharmProjects/l6J6y/0007/test'):
     os._exit()
 pass
 lines_count = 0
+comments_count = 0
+blank_count = 0
 for parent, dirnames, filenames in os.walk(work_path):
     for i in range(0, len(filenames)):
         filename = filenames[i]
         # lines_count += find_lines_func1(filename)
         # lines_count += find_lines_func2(filename)
-        lines_count += find_lines_func3(filename)
+        tmp = find_lines_func3(filename)
+        lines_count += tmp[0]
+        comments_count += tmp[1]
+        blank_count += tmp[2]
 
-print lines_count
+str = u"共有总行数:%d行, 其中注释有:%d行, 空白行有:%d行"%(lines_count, comments_count, blank_count)
+print str
+sys.exit()
 
 
 
