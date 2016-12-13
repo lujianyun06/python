@@ -16,6 +16,7 @@ def find_lines_func1(filename):
         if((char == '\n') or (char == '\r')): #最后一行是"" 空字符，但是使用'\0' 也无法匹配，只有用''才能匹配，可能理解为，
             # 就算一个空的文件也会有那个默认的第一行，但那个第一行是不算在字符中的。
             # 但文件里面确实有，但是用tell就读不到，只能用tell()+1强行多读一个字符作为补充
+            #只有最后的一个空行不算入，倒数第二个也算
             line_count += 1
     return line_count
 
@@ -69,7 +70,8 @@ for parent, dirnames, filenames in os.walk(work_path):
         comments_count += tmp[1]
         blank_count += tmp[2]
 
-str = u"共有总行数:%d行, 其中注释有:%d行, 空白行有:%d行"%(lines_count, comments_count, blank_count)
+str = "共有总行数:%d行, 其中注释有:%d行, 空白行有:%d行"%(lines_count, comments_count, blank_count)
+# print str.decode('utf8')
 print str
 sys.exit()
 
